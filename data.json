@@ -1,0 +1,9 @@
+{
+  "expenses": [
+    {
+      "payer": "Tyler",
+      "expenseName": "Groceries",
+      "expenseAmount": 50.0
+    }
+  ]
+}

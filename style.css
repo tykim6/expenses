@@ -1,0 +1,78 @@
+/* Reset default styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Global styles */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #007bff;
+  color: #fff;
+  padding: 1rem;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+nav li:not(:last-child) {
+  margin-right: 1rem;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem;
+}
+
+fieldset {
+  border: 1px solid #ccc;
+  padding: 1rem;
+}
+
+main {
+  padding: 2rem;
+}
+
+footer {
+  background-color: #f0f0f0;
+  text-align: center;
+  padding: 1rem;
+}
+
+.buttonRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.buttonRow button {
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.buttonRow .addButton {
+  transform: scale(1.5);
+  background-color: #007bff;
+}
+
+.buttonRow .clearButton {
+  background-color: #dc3545;
+}
