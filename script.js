@@ -1,4 +1,4 @@
-const url = "/data.json";
+const url = "data.json";
 
 // Define the ID of the HTML table element to display the data
 const tableId = "expenseTable";
