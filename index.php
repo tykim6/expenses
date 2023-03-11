@@ -11,7 +11,6 @@
 </head>
 
 <body>
-    <div id="app">
         <header>
             <h1>Expenses</h1>
         </header>
@@ -50,7 +49,6 @@
                     </div>
             </div>
             </form>
-    </div>
     </main>
 <details>
     <summary>View All Transactions</summary>  
@@ -63,8 +61,6 @@
     <footer>
         <p>Copyright © 2023 Expenses Web App</p>
     </footer>
-    </div>
-
 </body>
 <script type="module" src="script.js"></script>
 
