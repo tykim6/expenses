@@ -16,7 +16,7 @@
             <h1>Expenses</h1>
         </header>
         <main>
-                <h2>Current Balance</h3>
+                <h2>Current Balance</h2>
             <div class="balance">
                 <?php include 'helpers/calc_balance.php'?>
             </div>
