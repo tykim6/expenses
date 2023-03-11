@@ -1,6 +1,6 @@
 <?php
 // Connect to the database
-$mysqli = new mysqli('localhost', 'root', 'tylerdkim', 'expenses');
+$mysqli = new mysqli('localhost', 'id20436433_root', 'evyQrn1C2Wz!|MBx', 'expenses');
 
 // Check for connection errors
 if ($mysqli->connect_errno) {

@@ -6,7 +6,8 @@ $username = "root";
 $password = "tylerdkim";
 $dbname = "expenses";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli('localhost', 'id20436433_root', 'evyQrn1C2Wz!|MBx', 'expenses');
+
 
 // retrieve data from expenses table
 $sql = "SELECT * FROM expenses";

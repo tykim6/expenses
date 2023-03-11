@@ -11,7 +11,7 @@
 session_start();
 
 // connect to the database
-$mysqli = new mysqli('localhost', 'root', 'tylerdkim', 'expenses');
+$mysqli = new mysqli('localhost', 'id20436433_root', 'evyQrn1C2Wz!|MBx', 'expenses');
 
 // check for connection errors
 if ($mysqli->connect_errno) {

@@ -1,12 +1,8 @@
 <?php
 
 // database connection code
-$servername = "localhost";
-$username = "root";
-$password = "tylerdkim";
-$dbname = "expenses";
+$conn = new mysqli('localhost', 'id20436433_root', 'evyQrn1C2Wz!|MBx', 'expenses');
 
-$conn = new mysqli($servername, $username, $password, $dbname);
 
 // retrieve data from expenses table
 $sql = "SELECT * FROM expenses";
