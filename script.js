@@ -3,21 +3,23 @@ const url = "data.json";
 // Define the ID of the HTML table element to display the data
 const tableId = "expenseTable";
 
-// Fetch the data from the JSON file
-fetch(url)
-  .then((response) => response.json())
-  .then((data) => {
-    // Get a reference to the HTML table element
-    const table = document.getElementById(tableId);
+// Add event listener to all delete buttons
+const deleteButtons = document.querySelectorAll(".deleteButton");
+deleteButtons.forEach((deleteButton) => {
+  deleteButton.addEventListener("click", () => {
+    const expenseNo = deleteButton.getAttribute("data-id");
 
-    // Loop through the data and add a row to the HTML table for each item
-    console.log(data);
-    data.forEach((item) => {
-      const row = table.insertRow();
-      Object.values(item).forEach((value) => {
-        const cell = row.insertCell();
-        cell.textContent = value;
-      });
-    });
-  })
-  .catch((error) => console.error(error));
+    // Send AJAX request to delete expense from database
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "helpers/delete_expense.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+      if (this.status === 200) {
+        // Remove row from HTML table
+        const row = deleteButton.closest("tr");
+        row.parentNode.removeChild(row);
+      }
+    };
+    xhr.send(`expenseNo=${expenseNo}`);
+  });
+});
