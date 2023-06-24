@@ -33,18 +33,30 @@ st.markdown(
 
 # Define the inputs
 expense_names = db["Expense Name"].unique().tolist()
-col1, col2 = st.columns([2, 1])
+col1, col2, col3 = st.columns([2, 1, 1])
 with col1:
     name_input = st.text_input("Expense Name")
 with col2:
     name_select = st.selectbox(
         "Or select existing Expense Name", options=["None"] + expense_names
     )
-name = name_input if name_input else name_select
+with col3:
+    charge_full_amount = st.checkbox("Charge Entire Amount?")
 
-amount = st.number_input("Expense Amount", min_value=float(0), step=0.01)
+name = name_input if name_input else name_select
+amount = st.number_input("Expense Amount", min_value=0.01)
 who_paid = st.selectbox("Who Paid?", ["Tyler", "Adi"])
+
 add_button = st.button("Add Expense")
+
+# Calculate balance
+total_by_person = db.groupby("Who Paid")["Expense Amount"].sum()
+
+if charge_full_amount:
+    balance = total_by_person.get("Adi", 0) - total_by_person.get("Tyler", 0)
+else:
+    balance = (total_by_person.get("Adi", 0) - total_by_person.get("Tyler", 0)) / 2
+
 
 # When the button is pressed, add the new expense to the dataframe and save it to the CSV file
 if add_button:
@@ -94,7 +106,7 @@ def preprocess_data(df):
     df["Expense Name"] = df["Expense Name"].str.lower()
 
     # Group by 'Expense Name'
-    grouped = df.groupby("Expense Name").sum()
+    grouped = df.groupby("Expense Name").sum().reset_index()
 
     return grouped
 
@@ -102,7 +114,7 @@ def preprocess_data(df):
 # Dropdown for displaying past transactions, deleting transactions, or visualizing expenses
 option = st.selectbox(
     "What do you want to do?",
-    ("None", "Show past transactions", "Delete a transaction", "Visualize expenses"),
+    ("Show past transactions", "Delete a transaction", "Visualize expenses"),
 )
 
 if option == "Show past transactions":
