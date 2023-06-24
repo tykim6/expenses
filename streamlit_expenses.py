@@ -80,7 +80,7 @@ if add_button:
             "Expense Amount": amount,
             "Date": date.today().strftime("%Y-%m-%d"),
         }
-        db = db.append(new_data, ignore_index=True)
+        db = pd.concat([db, new_data], ignore_index=True)
         db.to_csv(filename, index=False)
         st.success("Expense added successfully!")
 
