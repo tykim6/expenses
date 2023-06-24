@@ -132,4 +132,5 @@ elif option == "Delete a transaction":
 
 elif option == "Visualize expenses":
     db = group_by_expense_name(db)
+    print(db)
     visualize_expenses(db)
