@@ -104,6 +104,13 @@ def visualize_expenses(df):
     st.altair_chart(chart, use_container_width=True)
 
 
+def group_by_expense_name(df):
+    # Convert 'Expense Name' to lower case for case insensitive grouping
+    df["Expense Name"] = df["Expense Name"].str.lower()
+    grouped = df.groupby("Expense Name").sum()
+    return grouped
+
+
 # Dropdown for displaying past transactions, deleting transactions, or visualizing expenses
 option = st.selectbox(
     "What do you want to do?",
@@ -124,4 +131,4 @@ elif option == "Delete a transaction":
             st.success("Transaction deleted")
 
 elif option == "Visualize expenses":
-    visualize_expenses(db)
+    visualize_expenses(group_by_expense_name(db))
