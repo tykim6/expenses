@@ -1,3 +1,22 @@
+# Check if the CSV file exists. If not, create it with the necessary columns.
+import os
+
+if not os.path.isfile(filename):
+    db = pd.DataFrame(columns=["Who Paid", "Expense Name", "Expense Amount", "Date"])
+    db.to_csv(filename, index=False)
+else:
+    try:
+        db = pd.read_csv(filename)
+        if db.empty:
+            db = pd.DataFrame(
+                columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
+            )
+    except pd.errors.EmptyDataError:
+        db = pd.DataFrame(
+            columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
+        )
+
+
 # Import the required libraries
 import streamlit as st
 import pandas as pd
