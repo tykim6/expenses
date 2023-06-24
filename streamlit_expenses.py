@@ -42,7 +42,7 @@ with col2:
     )
 name = name_input if name_input else name_select
 
-amount = st.number_input("Expense Amount", min_value=0, step=0.01)
+amount = st.number_input("Expense Amount", min_value=0.00, step=0.01)
 who_paid = st.selectbox("Who Paid?", ["Tyler", "Adi"])
 add_button = st.button("Add Expense")
 
