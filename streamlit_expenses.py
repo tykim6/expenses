@@ -1,6 +1,11 @@
-# Check if the CSV file exists. If not, create it with the necessary columns.
 import os
+import pandas as pd
+import streamlit as st
 
+# define filename
+filename = "expenses.csv"
+
+# Check if the CSV file exists. If not, create it with the necessary columns.
 if not os.path.isfile(filename):
     db = pd.DataFrame(columns=["Who Paid", "Expense Name", "Expense Amount", "Date"])
     db.to_csv(filename, index=False)
