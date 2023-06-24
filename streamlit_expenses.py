@@ -1,3 +1,8 @@
+# Import the required libraries
+import streamlit as st
+import pandas as pd
+import altair as alt
+import datetime
 import os
 import pandas as pd
 import streamlit as st
@@ -21,12 +26,6 @@ else:
             columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
         )
 
-
-# Import the required libraries
-import streamlit as st
-import pandas as pd
-import altair as alt
-from datetime import date
 
 # Set the CSV filename
 filename = "expenses.csv"
@@ -74,11 +73,12 @@ if add_button:
     if not name:
         st.error("Please input a new expense name or select an existing one.")
     else:
+        date = datetime.date.today()
         new_data = {
             "Who Paid": who_paid,
             "Expense Name": name_input,
             "Expense Amount": amount,
-            "Date": date,
+            "Date": date.strftime("%Y-%m-%d"),
         }
         new_data = pd.DataFrame(
             new_data, index=[0]
