@@ -4,37 +4,15 @@ import pandas as pd
 import altair as alt
 import datetime
 import os
-import pandas as pd
-import streamlit as st
 
-# define filename
+# Define filename
 filename = "expenses.csv"
 
 # Check if the CSV file exists. If not, create it with the necessary columns.
 if not os.path.isfile(filename):
     db = pd.DataFrame(columns=["Who Paid", "Expense Name", "Expense Amount", "Date"])
-    db.to_csv(filename, index=False)
 else:
-    try:
-        db = pd.read_csv(filename)
-        if db.empty:
-            db = pd.DataFrame(
-                columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
-            )
-    except pd.errors.EmptyDataError:
-        db = pd.DataFrame(
-            columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
-        )
-
-
-# Set the CSV filename
-filename = "expenses.csv"
-
-# Read the existing data from the CSV file, if it exists
-try:
     db = pd.read_csv(filename)
-except FileNotFoundError:
-    db = pd.DataFrame(columns=["Who Paid", "Expense Name", "Expense Amount", "Date"])
 
 # Calculate balance
 total_by_person = db.groupby("Who Paid")["Expense Amount"].sum()
@@ -64,7 +42,7 @@ with col2:
     )
 name = name_input if name_input else name_select
 
-amount = st.number_input("Expense Amount", min_value=0.01)
+amount = st.number_input("Expense Amount", min_value=0, step=0.01)
 who_paid = st.selectbox("Who Paid?", ["Tyler", "Adi"])
 add_button = st.button("Add Expense")
 
@@ -76,7 +54,7 @@ if add_button:
         date = datetime.date.today()
         new_data = {
             "Who Paid": who_paid,
-            "Expense Name": name_input,
+            "Expense Name": name,
             "Expense Amount": amount,
             "Date": date.strftime("%Y-%m-%d"),
         }
@@ -104,6 +82,7 @@ def visualize_expenses(df):
     st.altair_chart(chart, use_container_width=True)
 
 
+# Function to preprocess data
 def preprocess_data(df):
     # Replace NaN values with 'unknown'
     df["Expense Name"] = df["Expense Name"].fillna("unknown")
@@ -111,14 +90,13 @@ def preprocess_data(df):
     # Convert 'Expense Name' to string type
     df["Expense Name"] = df["Expense Name"].astype(str)
 
-    def group_by_expense_name(df):
-        # Convert 'Expense Name' to lower case for case insensitive grouping
-        df["Expense Name"] = df["Expense Name"].str.lower()
-        grouped = df.groupby("Expense Name").sum()
-        return grouped
+    # Convert 'Expense Name' to lower case for case insensitive grouping
+    df["Expense Name"] = df["Expense Name"].str.lower()
 
-    df = group_by_expense_name(df)
-    return df
+    # Group by 'Expense Name'
+    grouped = df.groupby("Expense Name").sum()
+
+    return grouped
 
 
 # Dropdown for displaying past transactions, deleting transactions, or visualizing expenses
@@ -129,7 +107,6 @@ option = st.selectbox(
 
 if option == "Show past transactions":
     st.write(db)
-
 elif option == "Delete a transaction":
     # Display each transaction with a delete button
     for i in db.index:
@@ -139,7 +116,6 @@ elif option == "Delete a transaction":
             db = db.drop(i)
             db.to_csv(filename, index=False)
             st.success("Transaction deleted")
-
 elif option == "Visualize expenses":
-    db = preprocess_data(db)
-    visualize_expenses(db)
+    db_processed = preprocess_data(db)
+    visualize_expenses(db_processed)
