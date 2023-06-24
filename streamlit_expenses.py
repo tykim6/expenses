@@ -74,15 +74,11 @@ if add_button:
     if not name:
         st.error("Please input a new expense name or select an existing one.")
     else:
-        new_data = {
-            "Who Paid": who_paid,
-            "Expense Name": name,
-            "Expense Amount": amount,
-            "Date": date.today().strftime("%Y-%m-%d"),
-        }
-        db = pd.concat([db, new_data], ignore_index=True)
-        db.to_csv(filename, index=False)
-        st.success("Expense added successfully!")
+    new_data = {'Who Paid': who_paid, 'Expense Name': expense_name, 'Expense Amount': expense_amount, 'Date': date}
+    new_data = pd.DataFrame(new_data, index=[0]) # converting new_data to a DataFrame
+    db = pd.concat([db, new_data], ignore_index=True)
+    db.to_csv(filename, index=False)
+    st.success('Transaction added')
 
 
 # Function to visualize expenses
