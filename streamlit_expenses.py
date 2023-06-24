@@ -104,11 +104,21 @@ def visualize_expenses(df):
     st.altair_chart(chart, use_container_width=True)
 
 
-def group_by_expense_name(df):
-    # Convert 'Expense Name' to lower case for case insensitive grouping
-    df["Expense Name"] = df["Expense Name"].str.lower()
-    grouped = df.groupby("Expense Name").sum()
-    return grouped
+def preprocess_data(df):
+    # Replace NaN values with 'unknown'
+    df["Expense Name"] = df["Expense Name"].fillna("unknown")
+
+    # Convert 'Expense Name' to string type
+    df["Expense Name"] = df["Expense Name"].astype(str)
+
+    def group_by_expense_name(df):
+        # Convert 'Expense Name' to lower case for case insensitive grouping
+        df["Expense Name"] = df["Expense Name"].str.lower()
+        grouped = df.groupby("Expense Name").sum()
+        return grouped
+
+    df = group_by_expense_name(df)
+    return df
 
 
 # Dropdown for displaying past transactions, deleting transactions, or visualizing expenses
@@ -131,6 +141,5 @@ elif option == "Delete a transaction":
             st.success("Transaction deleted")
 
 elif option == "Visualize expenses":
-    db = group_by_expense_name(db)
-    print(db)
+    db = preprocess_data(db)
     visualize_expenses(db)
