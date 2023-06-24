@@ -131,4 +131,5 @@ elif option == "Delete a transaction":
             st.success("Transaction deleted")
 
 elif option == "Visualize expenses":
-    visualize_expenses(group_by_expense_name(db))
+    db = group_by_expense_name(db)
+    visualize_expenses(db)
