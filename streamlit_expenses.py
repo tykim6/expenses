@@ -76,8 +76,8 @@ if add_button:
     else:
         new_data = {
             "Who Paid": who_paid,
-            "Expense Name": expense_name,
-            "Expense Amount": expense_amount,
+            "Expense Name": name_input,
+            "Expense Amount": amount,
             "Date": date,
         }
         new_data = pd.DataFrame(
