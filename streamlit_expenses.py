@@ -3,19 +3,27 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import datetime
-import os
+from pymongo import MongoClient
 
-# Define filename
-filename = "expenses.csv"
+# Create a MongoDB client
+MONGODB_URI = "mongodb+srv://tylerkim:safe_password@expenses.qkuauvo.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(MONGODB_URI)
 
-# Check if the CSV file exists. If not, create it with the necessary columns.
-if not os.path.isfile(filename):
-    db = pd.DataFrame(columns=["Who Paid", "Expense Name", "Expense Amount", "Date"])
-else:
-    db = pd.read_csv(filename)
+# Specify the database and collection
+db = client["database"]
+collection = db["expenses"]
+
+# Convert MongoDB collection to DataFrame
+expenses = pd.DataFrame(list(collection.find()))
+
+# Handle empty database case
+if expenses.empty:
+    expenses = pd.DataFrame(
+        columns=["Who Paid", "Expense Name", "Expense Amount", "Date"]
+    )
 
 # Calculate balance
-total_by_person = db.groupby("Who Paid")["Expense Amount"].sum()
+total_by_person = expenses.groupby("Who Paid")["Expense Amount"].sum()
 balance = total_by_person.get("Tyler", 0) - total_by_person.get("Adi", 0)
 
 # Use markdown to style the balance text
@@ -32,7 +40,7 @@ st.markdown(
 )
 
 # Define the inputs
-expense_names = db["Expense Name"].unique().tolist()
+expense_names = expenses["Expense Name"].unique().tolist()
 col1, col2 = st.columns([2, 1])
 with col1:
     name_input = st.text_input("Expense Name")
@@ -42,11 +50,11 @@ with col2:
     )
 name = name_input if name_input else name_select
 
-amount = st.number_input("Expense Amount", min_value=float(0), step=0.01)
+amount = st.number_input("Expense Amount", min_value=0.01)
 who_paid = st.selectbox("Who Paid?", ["Tyler", "Adi"])
 add_button = st.button("Add Expense")
 
-# When the button is pressed, add the new expense to the dataframe and save it to the CSV file
+# When the button is pressed, add the new expense to the DataFrame and save it to MongoDB
 if add_button:
     if not name:
         st.error("Please input a new expense name or select an existing one.")
@@ -58,28 +66,26 @@ if add_button:
             "Expense Amount": amount,
             "Date": date.strftime("%Y-%m-%d"),
         }
-        new_data = pd.DataFrame(
-            new_data, index=[0]
-        )  # converting new_data to a DataFrame
-        db = pd.concat([db, new_data], ignore_index=True)
-        db.to_csv(filename, index=False)
+        collection.insert_one(new_data)
         st.success("Transaction added")
 
 
 # Function to visualize expenses
 def visualize_expenses(df):
-    chart = (
-        alt.Chart(df)
-        .mark_bar()
-        .encode(
-            x="Expense Name",
-            y="Expense Amount",
-            color="Who Paid",
-            tooltip=["Expense Name", "Expense Amount", "Date"],
+    if "Expense Amount" in df.columns:
+        chart = (
+            alt.Chart(df)
+            .mark_bar()
+            .encode(
+                x="Expense Name:N",  # Nominal type for categorical data
+                y="sum(Expense Amount):Q",
+                tooltip=["sum(Expense Amount):Q"],
+            )
+            .properties(width=alt.Step(20))  # controls width of bar
         )
-        .properties(width=alt.Step(20))
-    )  # controls width of bar
-    st.altair_chart(chart, use_container_width=True)
+        st.altair_chart(chart, use_container_width=True)
+    else:
+        st.warning("No data to visualize")
 
 
 # Function to preprocess data
@@ -106,16 +112,27 @@ option = st.selectbox(
 )
 
 if option == "Show past transactions":
-    st.write(db)
+    st.write(expenses.drop("_id", axis=1))  # Drop _id column
 elif option == "Delete a transaction":
-    # Display each transaction with a delete button
-    for i in db.index:
-        row = db.loc[i]
-        delete_button_name = f"Delete: {row['Who Paid']} paid ${row['Expense Amount']:.2f} for {row['Expense Name']} on {row['Date']}"
-        if st.button(delete_button_name, key=i):
-            db = db.drop(i)
-            db.to_csv(filename, index=False)
-            st.success("Transaction deleted")
+    transaction_select = st.selectbox(
+        "Select a transaction to delete",
+        expenses.apply(
+            lambda x: f"{x['Who Paid']} paid ${x['Expense Amount']:.2f} for {x['Expense Name']} on {x['Date']}",
+            axis=1,
+        ),
+    )
+    delete_button = st.button("Delete selected transaction")
+    if delete_button:
+        index_to_delete = expenses.index[
+            expenses.apply(
+                lambda x: f"{x['Who Paid']} paid ${x['Expense Amount']:.2f} for {x['Expense Name']} on {x['Date']}",
+                axis=1,
+            )
+            == transaction_select
+        ][0]
+        collection.delete_one({"_id": expenses.loc[index_to_delete, "_id"]})
+        st.success("Transaction deleted")
+
 elif option == "Visualize expenses":
-    db_processed = preprocess_data(db)
-    visualize_expenses(db_processed)
+    expenses_processed = preprocess_data(expenses)
+    visualize_expenses(expenses_processed)
